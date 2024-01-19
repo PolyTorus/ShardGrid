@@ -1,15 +1,21 @@
 use std::fs;
 
-fn main() {
-    // tmpファイル読み込み
-    let entries = fs::read_dir("tmp/").unwrap();
 
-    // ファイル名とサイズを表示
+// ディレクトリの中を再帰的に探索して、ファイル名を表示する
+pub fn search_dir(dir: &str) {
+    let entries = fs::read_dir(dir).unwrap();
     for entry in entries {
-        let entry = entry.unwrap();
-        let path = entry.path();
-        let metadata = fs::metadata(&path).unwrap();
-
-        println!("{} is {} bytes", path.display(), metadata.len());
+        let path = entry.unwrap().path();
+        if path.is_dir() {
+            search_dir(path.to_str().unwrap());
+        } else {
+            println!("{}", path.display());
+        }
     }
+}
+
+fn main() {
+    // tmpディレクトリの中身を表示
+    search_dir("tmp/");
+    
 }
